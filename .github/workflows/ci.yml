@@ -26,7 +26,7 @@ jobs:
         continue-on-error: true
       - run: node_modules/.bin/playwright install --with-deps chromium
       - run: node_modules/.bin/playwright test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
