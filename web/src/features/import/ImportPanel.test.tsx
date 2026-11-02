@@ -44,6 +44,8 @@ describe("ImportPanel", () => {
     await userEvent.upload(fileInput, file);
 
     // Assert
-    expect(await screen.findByRole("alert")).toHaveTextContent("対応していないファイル形式です。");
+    // Plain matcher: jest-dom's type augmentation of vitest's Assertion does
+    // not apply under TypeScript 7 with vitest 5.0.5.
+    expect((await screen.findByRole("alert")).textContent).toContain("対応していないファイル形式です。");
   });
 });

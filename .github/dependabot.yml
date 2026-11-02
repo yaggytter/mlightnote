@@ -6,7 +6,14 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Do not pick up a release in its first days (supply-chain safety).
+    cooldown:
+      default-days: 7
     groups:
+      # react and react-dom must move together: React refuses to run when
+      # their versions differ.
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
       dev-dependencies:
         dependency-type: development
         update-types: [minor, patch]
@@ -14,3 +21,6 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
