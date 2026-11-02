@@ -1,0 +1,12 @@
+# Response headers for static hosts that read a `_headers` file
+# (Cloudflare Pages, Netlify; docs/DEPLOY.md).
+# Keep the "/*" block identical to deploy/nginx.conf; a unit test checks it.
+
+/*
+  Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+
+# Vite fingerprints everything under /assets/, so it can be cached for good.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

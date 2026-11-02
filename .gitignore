@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+dist/
+coverage/
+.cache/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Copyrighted songs used only for local testing (never commit; see e2e/helpers.ts)
+samplefiles/
+
+# Personal agent settings (Entire hooks etc.) and personal instructions
+.claude/
+.codex/
+CLAUDE.local.md
+
+# Local application data
+data/
+.data/
+.env
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
+
+# Agent runtime state
+.entire/

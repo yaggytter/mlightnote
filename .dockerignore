@@ -1,0 +1,13 @@
+.git
+.claude
+.codex
+.entire
+node_modules
+web/node_modules
+web/dist
+data
+coverage
+playwright-report
+test-results
+samplefiles
+.codex
