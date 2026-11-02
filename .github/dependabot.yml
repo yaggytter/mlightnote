@@ -1,0 +1,16 @@
+# The npm packages live in one workspace (root package.json + web/) with a
+# single lock file at the root, so Dependabot must look at "/", not "/web".
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
