@@ -8,13 +8,11 @@ on:
 permissions:
   contents: read
 
-# Pinned: Playwright 1.55 cannot install Chromium on newer Ubuntu images
-# (ubuntu-latest moved to 26.04). Move up together with Playwright.
 
 jobs:
   verify:
     name: Unit tests, type check, build, E2E
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +37,7 @@ jobs:
 
   docker-smoke:
     name: Production build behind nginx (CSP)
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
