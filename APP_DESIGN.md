@@ -104,6 +104,7 @@
 | 2026-09-25 | ミキサー画面（フェーダー・メーター・一括操作、`part.updateMany`）。仕様書の全面改訂、`BASE.md`（最初の依頼文）の削除、Cloudflare Pages 公開手順書と `_headers` |
 | 2026-11-02 | 公開先を `https://toolsonbrowser.com/mlightnote/` に決定。Pages の独自ドメインはパスの下に割り当てられないため、Pages（Direct Upload）＋ルート `toolsonbrowser.com/mlightnote*` の振り分け用 Worker（`cloudflare/router/`）の構成にした。ビルドのパスを `MLIGHTNOTE_BASE` で切り替えられるようにし、公開スクリプト `make publish`（`scripts/publish-cloudflare.sh`）、`_headers` の書き換えと `_redirects` の生成（`scripts/cloudflare/`）、その単体テスト、`wrangler` 4.150.0（開発用）を追加。スモークテストを `/` 以外のパスでも動くように修正。手順書をアカウント作成からの全手順に書き直し |
 | 2026-11-03 | OSS として公開するための整理。MIT ライセンス、`SECURITY.md`、CI（`.github/workflows/ci.yml`）を追加。ビルド時に第三者ライセンス一覧 `third-party-licenses.txt` を出力し（`web/thirdPartyLicenses.ts`）、マニュアルにリンクを追加。著作権のある実在曲（`samplefiles/`）と、それから作った正解データ（旧 05〜07 の 3 曲分）をリポジトリから外した（正解データの削除はテスト対象の縮小で、エンジンの挙動は変えていない）。スモークテストは `testdata/` の楽譜を使うようにした。Cloudflare への公開スクリプトと振り分け用 Worker は、作者の非公開の配信用リポジトリへ移すためにここから削除し、公開先を問わない配信手順書 [docs/DEPLOY.md](docs/DEPLOY.md) に置き換えた。個人用の設定（エージェントのフック、作業手順）は Git の管理から外した |
+| 2026-11-03 | E2E テストが探す実在の曲を、曲名ではなく役割の名前（`score.xml`、`score.mid`、`band.mid`）で探すようにした。サブタイトルの編集テストは、特定の文字列ではなく読み込んだ値を使う。CI の実行環境を `ubuntu-24.04` に固定（Playwright 1.55 が Ubuntu 26.04 に対応していないため） |
 
 ## 1. 文書の目的
 
@@ -1210,7 +1211,7 @@ web/src/engine/
 ### 19.4 テスト用楽譜
 
 - `testdata/`：notations.musicxml、repeats.musicxml、trio.musicxml、trio.mxl（移調楽器を含む3パート）、synthetic.mid（Format 0、3連符、長さの違う和音、ベース、ドラム、テンポ変化）
-- 実在の曲：長く密度の高い楽譜を使う一部の E2E テスト用。著作権があるため **リポジトリには含めない**。手元の `samplefiles/`（Git の対象外）か、環境変数 `MLIGHTNOTE_SAMPLES_DIR` で指定した場所に置く。無い場合、そのテストだけがスキップされる。正解データやテスト用楽譜を実在の曲から作ってはならない。
+- 実在の曲：長く密度の高い楽譜を使う一部の E2E テスト用。著作権があるため **リポジトリには含めない**。手元の `samplefiles/`（Git の対象外）か、環境変数 `MLIGHTNOTE_SAMPLES_DIR` で指定した場所に、役割ごとの名前（`score.xml`、`score.mid`、`band.mid`。条件は `e2e/helpers.ts`）で置く。テストは作者の手元の楽譜の内容（長さ・テンポ・パート数）を確かめるため、ほかの曲では通らない。無い場合、そのテストだけがスキップされる。正解データやテスト用楽譜を実在の曲から作ってはならない。
 - 未整備：MusicXML 4.0 の各種ソフトの出力、打楽器・多小節休符・弱起、壊れた XML・XXE・ZIP bomb の縮小ファイル、新旧スキーマの `.mlight`。
 
 ### 19.5 一致テスト（Golden）

@@ -53,7 +53,7 @@ make e2e               # Playwright E2E（Vite dev server を自動起動）
 make deploy            # docker compose build → up -d → 本番構成でのブラウザ動作確認
 ```
 
-`testdata/` の楽譜は、一致テストと E2E テストのフィクスチャです。長い実在の曲を使う一部の E2E テストは、手元の `samplefiles/`（または環境変数 `MLIGHTNOTE_SAMPLES_DIR`）に楽譜がある場合だけ動き、無ければスキップされます。実在の曲は著作権があるため、リポジトリには含めません。
+`testdata/` の楽譜は、一致テストと E2E テストのフィクスチャです。長い実在の曲を使う一部の E2E テストは、手元の `samplefiles/`（または環境変数 `MLIGHTNOTE_SAMPLES_DIR`）に楽譜（`score.xml`、`score.mid`、`band.mid`。条件は `e2e/helpers.ts`）がある場合だけ動き、無ければスキップされます。実在の曲は著作権があるため、リポジトリには含めません。
 
 ### 構成
 
