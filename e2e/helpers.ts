@@ -5,13 +5,23 @@ import path from "node:path";
 // Real-world songs for the tests that need long, dense scores. They are not
 // in the repository (copyright): put them in samplefiles/ or point
 // MLIGHTNOTE_SAMPLES_DIR at them; without them those tests are skipped.
+// The tests check details of the maintainer's own files (length, tempo,
+// part count), so other songs under these names will not pass them.
 const SAMPLE_DIR = process.env.MLIGHTNOTE_SAMPLES_DIR ?? path.resolve(__dirname, "..", "samplefiles");
 
-/** Finds a sample by extension; the on-disk names are NFD-normalized. */
-export function sample(ext: string, contains = ""): string | null {
-  if (!fs.existsSync(SAMPLE_DIR)) return null;
-  const f = fs.readdirSync(SAMPLE_DIR).find((n) => n.endsWith(ext) && n.includes(contains));
-  return f ? path.join(SAMPLE_DIR, f) : null;
+/**
+ * The sample files, by role:
+ * - score.xml: a long MusicXML song (165 measures, ♩=132, a chord symbol with
+ *   an added 9th, an empty part-name, a subtitle)
+ * - score.mid: the same song as MIDI (two tracks, ♩=132 from a tempo event)
+ * - band.mid: a Format 0 band MIDI with 12 channels, one of them drums
+ */
+export type SampleName = "score.xml" | "score.mid" | "band.mid";
+
+/** The path of a sample file, or null when it is not there. */
+export function sample(name: SampleName): string | null {
+  const file = path.join(SAMPLE_DIR, name);
+  return fs.existsSync(file) ? file : null;
 }
 
 export async function importFile(page: Page, file: string): Promise<void> {

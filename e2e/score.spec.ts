@@ -3,11 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { importFile, sample, trackExternalRequests, waitForScore } from "./helpers";
 
-const xml = sample(".xml");
-const mid = sample(".mid", "ray");
+const xml = sample("score.xml");
+const mid = sample("score.mid");
 
 test.describe("MusicXML score", () => {
-  test.skip(!xml, "samplefiles/*.xml not present");
+  test.skip(!xml, "samplefiles/score.xml not present");
 
   test("renders real notation with chord symbols and makes no external requests", async ({ page }) => {
     const external = trackExternalRequests(page);
@@ -53,8 +53,8 @@ test.describe("MusicXML score", () => {
 });
 
 test.describe("Format 0 band MIDI", () => {
-  const band = sample(".mid", "プラマイ") ?? sample(".mid", "プラマイ".normalize("NFD"));
-  test.skip(!band, "samplefiles/プラマイ.mid not present");
+  const band = sample("band.mid");
+  test.skip(!band, "samplefiles/band.mid not present");
 
   test("splits into one part per channel and renders", async ({ page }) => {
     const errors: string[] = [];
@@ -69,7 +69,7 @@ test.describe("Format 0 band MIDI", () => {
 });
 
 test.describe("MIDI score", () => {
-  test.skip(!mid, "samplefiles/*.mid not present");
+  test.skip(!mid, "samplefiles/score.mid not present");
 
   test("transcribes to a grand staff and plays at the file's tempo", async ({ page }) => {
     await importFile(page, mid!);
@@ -231,7 +231,7 @@ test.describe("repeats", () => {
 });
 
 test.describe("transport", () => {
-  test.skip(!mid, "samplefiles/*.mid not present");
+  test.skip(!mid, "samplefiles/score.mid not present");
 
   test("L loops the current measure, M toggles the metronome, tempo scales the clock", async ({ page }, testInfo) => {
     await importFile(page, mid!);
@@ -265,24 +265,25 @@ test.describe("transport", () => {
 });
 
 test.describe("editing and .mlight", () => {
-  test.skip(!xml, "samplefiles/*.xml not present");
+  test.skip(!xml, "samplefiles/score.xml not present");
 
   test("the line under the title (movement title) can be edited and cleared", async ({ page }) => {
     await importFile(page, xml!);
     const texts = () => page.locator(".score-viewer__canvas svg text").allTextContents();
-    await expect.poll(async () => (await texts()).some((t) => t.startsWith("ototori_"))).toBe(true);
-
     const field = page.getByLabel("サブタイトル（タイトルの下の行）");
-    await expect(field).toHaveValue(/^ototori_/);
+    await expect(field).not.toHaveValue("");
+    const original = await field.inputValue();
+    await expect.poll(async () => (await texts()).includes(original)).toBe(true);
+
     await field.fill("Version B");
     await field.press("Enter");
     await expect.poll(async () => (await texts()).includes("Version B")).toBe(true);
-    expect((await texts()).some((t) => t.startsWith("ototori_"))).toBe(false);
+    expect((await texts()).includes(original)).toBe(false);
 
     await field.fill("");
     await field.press("Enter");
     await expect.poll(async () => (await texts()).includes("Version B")).toBe(false);
-    expect((await texts()).some((t) => t.startsWith("ototori_"))).toBe(false);
+    expect((await texts()).includes(original)).toBe(false);
   });
 
   test("edit, undo, save, download, and reopen preserves edits", async ({ page }, testInfo) => {
