@@ -207,7 +207,7 @@ export function PlaybackControls({ plan, handleRef, onFrame, parts = [], onMixCo
   const progress = total > 0 ? Math.min(100, (position / total) * 100) : 0;
 
   return (
-    <div className="playback-bar" role="region" aria-label="再生">
+    <div className="playback-bar" role="region" aria-label="再生" data-follow-inset="bottom">
       {mixerOpen && onMixCommit && (
         <MixerPanel
           parts={parts}

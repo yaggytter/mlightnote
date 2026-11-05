@@ -45,8 +45,48 @@ export function stepMeasure(measures: MeasureTiming[], seconds: number, directio
   return Math.max(0, nearStart ? current - 1 : current);
 }
 
-// Height of the bottom-docked transport bar (plus a little air).
-const DOCK_CLEARANCE_PX = 140;
+/** Air left between the sticky toolbar and the system brought into view. */
+export const FOLLOW_GAP_PX = 8;
+/** The most room kept above a system for its chord names, marks, and measure numbers. */
+export const MAX_HEADROOM_PX = 120;
+// Used when no transport bar is found: its usual height plus a little air.
+const DOCK_FALLBACK_PX = 140;
+
+interface Band {
+  top: number;
+  bottom: number;
+}
+
+/**
+ * The room to keep visible above a measure's box. The boxes cover the
+ * staves only, while chord names, tempo and rehearsal marks, and measure
+ * numbers sit above them, in the space up to the previous system. So this
+ * is that space (or the distance to the top, for the first system), capped.
+ */
+export function headroomAbove(rects: MeasureRect[], rect: MeasureRect, max: number): number {
+  let above = 0;
+  for (const r of rects) {
+    const bottom = r.y + r.height;
+    if (r.width > 0 && bottom <= rect.y && bottom > above) above = bottom;
+  }
+  return Math.min(max, Math.max(0, rect.y - above));
+}
+
+/**
+ * Where to scroll so the playing measure is visible, or null to stay put.
+ * `box` is the measure's box with its headroom; `visible` is the part of
+ * the scroller not covered by the sticky toolbar and the docked transport
+ * (viewport coordinates, both). A measure out of that band is brought up
+ * to just under the toolbar, so the band shows its system and what
+ * follows, like turning a page. Centring it a third of the way down left
+ * music already played at the band's top and cut tall systems off under
+ * the transport.
+ */
+export function followScrollTop(box: Band, visible: Band, scrollTop: number): number | null {
+  if (box.top >= visible.top && box.bottom <= visible.bottom) return null;
+  const target = Math.max(0, scrollTop + (box.top - visible.top) - FOLLOW_GAP_PX);
+  return Math.abs(target - scrollTop) < 1 ? null : target;
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -60,15 +100,22 @@ function scrollParent(el: HTMLElement): HTMLElement | null {
   return null;
 }
 
-function keepInView(el: HTMLElement) {
+/** The scroller's band not covered by its sticky toolbar and transport (`data-follow-inset`). */
+function clearBand(container: HTMLElement): Band {
+  const view = container.getBoundingClientRect();
+  const toolbar = container.querySelector<HTMLElement>('[data-follow-inset="top"]');
+  const dock = container.querySelector<HTMLElement>('[data-follow-inset="bottom"]');
+  const top = toolbar ? Math.max(view.top, toolbar.getBoundingClientRect().bottom) : view.top;
+  const bottom = dock ? Math.min(view.bottom, dock.getBoundingClientRect().top) : view.bottom - DOCK_FALLBACK_PX;
+  return { top, bottom };
+}
+
+function keepInView(el: HTMLElement, headroom: number) {
   const container = scrollParent(el);
   if (!container) return;
   const box = el.getBoundingClientRect();
-  const view = container.getBoundingClientRect();
-  // The transport docks over the bottom of the view; treat that band as
-  // out of sight so the playing measure never hides behind it.
-  if (box.top >= view.top && box.bottom <= view.bottom - DOCK_CLEARANCE_PX) return;
-  const top = container.scrollTop + (box.top - view.top) - view.height / 3;
+  const top = followScrollTop({ top: box.top - headroom, bottom: box.bottom }, clearBand(container), container.scrollTop);
+  if (top === null) return;
   container.scrollTo({ top, behavior: prefersReducedMotion() ? "auto" : "smooth" });
 }
 
@@ -122,7 +169,7 @@ export function usePlaybackCursor({ measures, readRects, handleRef, follow }: Cu
       highlight.style.transform = `translate(${rect.x}px, ${rect.y}px)`;
       highlight.style.width = `${rect.width}px`;
       highlight.style.height = `${rect.height}px`;
-      if (followRef.current && status === "playing") keepInView(highlight);
+      if (followRef.current && status === "playing") keepInView(highlight, headroomAbove(rects(), rect, MAX_HEADROOM_PX));
     },
     [measures, rects],
   );
