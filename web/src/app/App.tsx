@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ImportPanel } from "../features/import/ImportPanel";
 import { Library } from "../features/library/Library";
 import { Manual } from "../features/help/Manual";
+import { SampleSongs } from "../features/samples/SampleSongs";
 import { Workspace } from "../features/workspace/Workspace";
 import { Icon } from "../shared/ui/Icon";
 import { THEME_LABEL, useTheme } from "../shared/ui/theme";
@@ -35,6 +36,7 @@ export function App() {
               <h1 className="home__title">楽譜を開く</h1>
               <p className="home__lead">MusicXML や MIDI を読み込むと、きれいな五線譜で表示・再生・印刷できます。</p>
               <ImportPanel onImported={setProjectId} />
+              <SampleSongs onImported={setProjectId} />
             </section>
             <Library onOpen={setProjectId} />
             <Manual />

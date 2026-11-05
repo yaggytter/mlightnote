@@ -615,6 +615,91 @@ select:disabled {
   font-weight: 500;
 }
 
+/* Built-in sample songs, under the import panel (APP_DESIGN.md §7.1). */
+.samples {
+  margin-top: 28px;
+}
+
+.samples__title {
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.samples__lead {
+  margin: 4px 0 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.samples__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.samples__open {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 2px 10px;
+  width: 100%;
+  height: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease), box-shadow var(--normal) var(--ease), transform var(--normal) var(--ease);
+}
+
+.samples__open:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.samples__open:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.samples__icon {
+  display: grid;
+  grid-row: span 3;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  color: var(--accent-soft-text);
+}
+
+.samples__name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.samples__composer {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.samples__note {
+  color: var(--text-subtle);
+  font-size: 12px;
+}
+
+.samples__error {
+  margin: 10px 0 0;
+  color: var(--danger);
+  font-weight: 500;
+}
+
 .library__header {
   display: flex;
   flex-wrap: wrap;

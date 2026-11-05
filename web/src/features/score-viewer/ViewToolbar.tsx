@@ -42,7 +42,7 @@ export function ViewToolbar({
 }: ViewToolbarProps) {
   const hasTransposing = parts.some((p) => p.transposing);
   return (
-    <div className="view-toolbar" role="toolbar" aria-label="表示設定">
+    <div className="view-toolbar" role="toolbar" aria-label="表示設定" data-follow-inset="top">
       <PartPicker parts={parts} selected={selectedPartIds} onChange={onSelectParts} />
       <span className="view-toolbar__divider" aria-hidden="true" />
       <label className="switch" title={hasTransposing ? undefined : "移調楽器が無いため表示は変わりません"}>
